@@ -1,4 +1,5 @@
 #include "tutorial.h"
+#include <algorithm>
 #include <fstream>
 #include <ranges>
 #include <string>
@@ -61,6 +62,30 @@ count_lines_in_files4(const std::vector<std::string>& files)
   auto t = files | std::views::transform(count_lines);
   return std::vector<int>(t.begin(), t.end());
 }
+
+// Listing 3.1 - Creating a function object with a generic call operator
+//
+// Would only require input object with a .age() member function. This is
+// pretty similar to an interface in a way.
+//
+// Usage:
+//
+//  older_than predicate(5);
+//  std::count_if(persons.cbegin(), persons.cend(), predicate);
+//  std::count_if(cars.cbegin(), cars.cend(), predicate);
+//  std::count_if(projects.cbegin(), projects.cend(), predicate);
+class older_than {
+public:
+    older_than(int limit) : m_limit(limit) {}
+
+    template <typename T>
+    bool operator()(T&& object) const {
+        return std::forward<T>(object).age() > m_limit;
+    }
+
+private:
+    int m_limit;
+};
 
 int main() {
   return 0;
